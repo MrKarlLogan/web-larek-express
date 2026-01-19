@@ -3,12 +3,15 @@ import NotFoundError from '../errors/not-found-error';
 import productRoutes from './product';
 import orderRoutes from './order';
 import authRouter from './auth';
+import auth from '../middlewares/auth';
+import uploadRouter from './upload';
 
 const routes = Router();
 
 routes.use('/product', productRoutes);
 routes.use('/order', orderRoutes);
 routes.use('/auth', authRouter);
+routes.use('/upload', auth, uploadRouter);
 
 routes.use((_req: Request, _res: Response, next: NextFunction) => {
   next(new NotFoundError('Маршрут не найден'));

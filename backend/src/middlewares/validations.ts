@@ -51,7 +51,9 @@ const validateCreateProduct = celebrate({
     }),
     image: Joi.object().keys({
       fileName: Joi.string().required(),
-      originalName: Joi.string().required(),
+      originName: Joi.string().required(),
+      size: Joi.number().optional(),
+      mimetype: Joi.string().optional(),
     }),
     category: Joi.string().required().messages({
       'string.empty': 'Поле "category" должно быть заполнено',
@@ -74,4 +76,61 @@ const validateObjectId = celebrate({
   }),
 });
 
-export { validateCreateOrder, validateCreateProduct, validateObjectId };
+const validateProductUpdate = celebrate({
+  [Segments.BODY]: Joi.object().keys({
+    title: Joi.string().min(2).max(30).messages({
+      'string.min': 'Минимальная длина поля name - 2',
+      'string.max': 'Максимальная длина поля "name" - 30',
+    }),
+    image: Joi.object().keys({
+      fileName: Joi.string().required(),
+      originName: Joi.string().required(),
+      size: Joi.number().optional(),
+      mimetype: Joi.string().optional(),
+    }),
+    category: Joi.string(),
+    description: Joi.string(),
+    price: Joi.number().allow(null),
+  }),
+});
+
+const validateUser = celebrate({
+  [Segments.BODY]: Joi.object().keys({
+    name: Joi.string().min(2).max(30).messages({
+      'string.min': 'Минимальная длина поля "name" - 2',
+      'string.max': 'Максимальная длина поля "name" - 30',
+    }),
+    password: Joi.string().min(6).required().messages({
+      'string.empty': 'Поле "password" должно быть заполнено',
+    }),
+    email: Joi.string()
+      .required()
+      .email()
+      .message('Поле "email" должно быть валидным email-адресом')
+      .messages({ 'string.empty': 'Поле "email" должно быть заполнено' }),
+  }),
+});
+
+const validateAuth = celebrate({
+  [Segments.BODY]: Joi.object().keys({
+    email: Joi.string()
+      .required()
+      .email()
+      .message('Поле "email" должно быть валидным email-адресом')
+      .messages({
+        'string.required': 'Поле "email" должно быть заполнено',
+      }),
+    password: Joi.string().required().messages({
+      'string.empty': 'Поле "password" должно быть заполнено',
+    }),
+  }),
+});
+
+export {
+  validateCreateOrder,
+  validateCreateProduct,
+  validateObjectId,
+  validateProductUpdate,
+  validateUser,
+  validateAuth,
+};

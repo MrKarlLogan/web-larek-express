@@ -2,7 +2,7 @@ import mongoose, { ObjectId } from 'mongoose';
 
 interface IImagePath {
   fileName: string;
-  originalName: string;
+  originName: string;
 }
 
 export interface IProduct {
@@ -28,7 +28,7 @@ const productSchema = new mongoose.Schema<IProduct>({
       type: String,
       required: [true, 'Поле fileName должно быть заполнено'],
     },
-    originalName: {
+    originName: {
       type: String,
       default: '',
     },
