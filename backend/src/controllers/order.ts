@@ -1,7 +1,10 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
+import { Error as MongooseError } from 'mongoose';
 import Product, { IProduct } from '../model/product';
+import BadRequestError from '../errors/bad-request-error';
+import NotFoundError from '../errors/not-found-error';
 
-const createOrder = async (req: Request, res: Response) => {
+const createOrder = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { items, total } = req.body;
 
@@ -14,32 +17,26 @@ const createOrder = async (req: Request, res: Response) => {
     items.forEach((id: string) => {
       const product = products.find(p => p._id.toString() === id);
 
-      if (!product) throw new Error(`Товар с ${id} не найден`);
+      if (!product) throw new NotFoundError(`Товар с ${id} не найден`);
 
-      if (product?.price === null) throw new Error(`Товар с ${id} не продаётся`);
+      if (product?.price === null) throw new BadRequestError(`Товар с ${id} не продаётся`);
 
       return basket.push(product);
     });
 
     const totalBasket = basket.reduce((acc, item) => acc + item.price!, 0);
-    if (totalBasket !== total) throw new Error('Неверная сумма заказа');
+    if (totalBasket !== total) throw new BadRequestError('Неверная сумма заказа');
 
     return res.status(200).send({
       id: crypto.randomUUID(),
       total,
     });
   } catch (error) {
-    let statusCode = 400;
-    const errorMessage = error instanceof Error ? error.message : 'Ошибка сервера';
+    if (error instanceof MongooseError.ValidationError) {
+      return next(new BadRequestError(error.message));
+    }
 
-    if (errorMessage.includes('не найден')) statusCode = 404;
-
-    if (errorMessage.includes('не продаётся') || errorMessage.includes('Неверная сумма заказа'))
-      statusCode = 400;
-
-    return res.status(statusCode).send({
-      message: errorMessage,
-    });
+    return next(error);
   }
 };
 
