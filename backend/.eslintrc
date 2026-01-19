@@ -12,6 +12,7 @@
   "plugins": ["@typescript-eslint", "prettier"],
   "rules": {
     "prettier/prettier": "error",
+    "no-console": "off",
     "comma-dangle": "off",
     "object-curly-newline": "off",
     "import/no-extraneous-dependencies": "off",
