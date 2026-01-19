@@ -1,4 +1,5 @@
 import express from 'express';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import path from 'path';
@@ -10,6 +11,7 @@ import routes from './routes/index';
 
 const app = express();
 
+app.use(cookieParser());
 app.use(requestLogger);
 app.use(cors({ origin: ORIGIN_ALLOW, credentials: true }));
 app.use(express.static(path.join(__dirname, 'public')));
