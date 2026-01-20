@@ -13,12 +13,11 @@ import NotFoundError from './errors/not-found-error';
 const app = express();
 
 app.use(cookieParser());
-
-app.use(requestLogger);
-app.use(cors({ origin: ORIGIN_ALLOW, credentials: true }));
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors({ origin: ORIGIN_ALLOW, credentials: true }));
+app.use(requestLogger);
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(routes);
 app.use('*', (_req, _res, next) => {
